@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Adds a simple briefcase emoji as the icon in the browser tab -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💼</text></svg>">
+    <title>Vincentsius Ferrer Chang - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Ensure body has a position context for the canvas */
+            position: relative;
+        }
+        /* Styles for the animated background canvas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Place it behind all content */
+        }
+        .section-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .section-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .glass-card {
+            background: rgba(23, 37, 60, 0.7); /* Darker glass effect */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .skill-item:hover {
+            background-color: rgba(30, 41, 59, 0.9);
+            color: #60a5fa; /* light blue on hover */
+            transform: translateX(4px);
+            transition: all 0.2s ease-in-out;
+        }
+        /* Style for the active navigation link */
+        .nav-link.active {
+            background-color: #e2e8f0; /* slate-200 */
+            color: #0f172a; /* slate-900 */
+            font-weight: 500;
+        }
+
+        /* STYLES for centered navigation */
+        @media (min-width: 768px) { /* md breakpoint */
+            #header-container {
+                position: relative; /* Establish positioning context for the nav */
+            }
+            #main-nav {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                transition: all 0.3s ease-in-out;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#0a101e] text-slate-300">
+
+    <!-- Canvas for the animated particle background -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Header -->
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div id="header-container" class="container mx-auto px-6 py-4 flex justify-between items-center transition-all duration-300">
+            
+            <!-- Location -->
+            <div class="hidden md:flex items-center text-sm text-slate-400">
+                <p>Asia/Jakarta</p>
+            </div>
+
+            <!-- Modern Pill Navigation -->
+            <nav id="main-nav" class="hidden md:flex bg-slate-800/50 p-2 rounded-full shadow-sm ring-1 ring-white/10 backdrop-blur-md">
+                <a href="#hero" class="nav-link px-4 py-2 rounded-full text-slate-300 hover:bg-slate-200 hover:text-slate-900 transition-all duration-300">Home</a>
+                <a href="#about" class="nav-link px-4 py-2 rounded-full text-slate-300 hover:bg-slate-200 hover:text-slate-900 transition-all duration-300">About</a>
+                <a href="#education" class="nav-link px-4 py-2 rounded-full text-slate-300 hover:bg-slate-200 hover:text-slate-900 transition-all duration-300">Education</a>
+                <a href="#skills" class="nav-link px-4 py-2 rounded-full text-slate-300 hover:bg-slate-200 hover:text-slate-900 transition-all duration-300">Skills</a>
+                <a href="#projects" class="nav-link px-4 py-2 rounded-full text-slate-300 hover:bg-slate-200 hover:text-slate-900 transition-all duration-300">Projects</a>
+                <a href="#contact" class="nav-link px-4 py-2 rounded-full text-slate-300 hover:bg-slate-200 hover:text-slate-900 transition-all duration-300">Contact</a>
+            </nav>
+
+            <!-- Right side elements -->
+            <div class="hidden md:flex items-center space-x-6">
+                 <!-- Download me button in header - EDIT "cv.pdf" to your actual CV file name -->
+                <a href="https://drive.google.com/file/d/1B1wsIdlMsxBDjdPtkyJlEI09T1xB-C38/view?usp=drive_link" download class="flex items-center bg-slate-200 text-slate-900 font-bold px-4 py-2 rounded-full shadow-sm hover:bg-white transform hover:scale-105 transition duration-300">
+                    Download me
+                </a>
+                <!-- Real-time clock -->
+                <p id="clock" class="text-sm text-slate-400 font-mono"></p>
+            </div>
+
+
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-full bg-slate-800/50 ring-1 ring-white/10 backdrop-blur-md">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden mx-6 mt-2 bg-slate-800/90 backdrop-blur-md rounded-xl shadow-lg p-4">
+             <a href="#hero" class="block py-2 text-slate-300 hover:text-blue-400 rounded-md text-center">Home</a>
+             <a href="#about" class="block py-2 text-slate-300 hover:text-blue-400 rounded-md text-center">About</a>
+             <a href="#education" class="block py-2 text-slate-300 hover:text-blue-400 rounded-md text-center">Education</a>
+             <a href="#skills" class="block py-2 text-slate-300 hover:text-blue-400 rounded-md text-center">Skills</a>
+             <a href="#projects" class="block py-2 text-slate-300 hover:text-blue-400 rounded-md text-center">Projects</a>
+             <a href="#contact" class="block py-2 text-slate-300 hover:text-blue-400 rounded-md text-center">Contact</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 pt-24">
+
+        <!-- Hero Section -->
+        <section id="hero" class="text-center py-20 lg:py-32 section-fade-in">
+            <!-- EDIT YOUR NAME AND TITLE -->
+            <h1 class="text-4xl md:text-6xl font-bold text-slate-100 leading-tight">Vincentsius Ferrer Chang</h1>
+            <p class="mt-4 text-lg md:text-xl text-slate-400">Undergraduate Information Systems Student at Binus University | Minor Business Intellegence</p>
+            <div class="mt-8 flex flex-col items-center justify-center gap-4">
+                <!-- EDIT "cv.pdf" to your actual CV file name -->
+                <a href="https://drive.google.com/file/d/1B1wsIdlMsxBDjdPtkyJlEI09T1xB-C38/view?usp=drive_link" download class="flex items-center bg-blue-500 text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:bg-blue-600 transform hover:scale-105 transition duration-300">
+                    Download me
+                    <i data-lucide="arrow-right" class="ml-2 h-5 w-5"></i>
+                </a>
+                <!-- CV note -->
+                <p class="mt-2 text-xs text-slate-500 flex items-center">
+                    <i data-lucide="file-text" class="h-3 w-3 mr-1.5"></i>
+                    Yes, that's my CV
+                </p>
+            </div>
+        </section>
+
+        <!-- About Me Section -->
+        <section id="about" class="py-20 section-fade-in">
+            <h2 class="text-3xl font-bold text-center mb-12 text-blue-400">About Me</h2>
+            <div class="max-w-4xl mx-auto text-center">
+                <!-- EDIT YOUR PERSONAL DESCRIPTION HERE -->
+                <p class="text-slate-400 leading-relaxed mb-4">
+                    Hi there! I'm Vincentsius, an Information Systems student at Binus University with a passion for Business Intelligence. I can do some things like basic java programming, Excel, SQL, Tableau. I enjoy transforming raw data into meaningful insights that support decision-making and help solve real-world problems.
+                </p>
+                <p class="text-slate-400 leading-relaxed">
+                     My studies have given me a great foundation, but I'm always looking for the next challenge. I'm excited to find an job where I can jump into real-world projects, contribute to a team, and keep learning.
+                </p>
+            </div>
+        </section>
+
+        <!-- Education & Experience Section -->
+        <section id="education" class="py-20 section-fade-in">
+            <h2 class="text-3xl font-bold text-center mb-12 text-blue-400">Education & Certificates</h2>
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Education Column -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4 flex items-center text-slate-200"><i data-lucide="graduation-cap" class="mr-3 text-blue-400"></i>Education</h3>
+                    <div class="glass-card p-6 rounded-lg border-l-4 border-blue-400">
+                        <p class="font-bold text-lg text-slate-100">Binus University</p>
+                        <p class="text-slate-400">Bachelor of Information Systems at Binus University</p>
+                        <p class="text-sm text-slate-500 mt-1">Expected Graduation: 2027</p>
+                        <p class="text-sm text-slate-500">Minor: Business Intelligence</p>
+                    </div>
+                </div>
+                <!-- Certificates Column -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4 flex items-center text-slate-200"><i data-lucide="award" class="mr-3 text-blue-400"></i>Certificates</h3>
+                    <div class="glass-card p-6 rounded-lg border-l-4 border-blue-400">
+                         <!-- Add your certificates here -->
+                        <p class="font-bold text-lg text-slate-100">Business Intellegence Analyst Course (Statistics, Database theory, SQL, Tableau)</p>
+                        <p class="text-slate-400">Udemy</p>
+                        <p class="text-sm text-slate-500 mt-1">September 2025</p>
+                        <p class="text-sm text-slate-500 mt-1">Credential ID: UC-98de1523-7b63-4915-9c79-cc12d3c63f08</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="py-20 section-fade-in">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12 text-blue-400">My Skills</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Technical Skills -->
+                    <div class="glass-card p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center text-slate-200"><i data-lucide="cpu" class="mr-2 text-blue-400"></i>Technical Skills</h3>
+                        <ul class="space-y-1 text-slate-400">
+                            <!-- EDIT YOUR TECHNICAL SKILLS HERE -->
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Information System Fundamentals</li>
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>SQL (Structured Query Language)</li>
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Java</li>
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Microsoft Excel</li>
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Business Process Modeling</li>
+                        </ul>
+                    </div>
+                    <!-- Design & BI Tools -->
+                    <div class="glass-card p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center text-slate-200"><i data-lucide="pen-tool" class="mr-2 text-blue-400"></i>Design & BI Tools</h3>
+                        <ul class="space-y-1 text-slate-400">
+                            <!-- EDIT YOUR TOOLS HERE -->
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Figma</li>
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Canva</li>
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Visual Paradigm</li>
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Tableau</li>
+                        </ul>
+                    </div>
+                    <!-- Soft Skills -->
+                    <div class="glass-card p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center text-slate-200"><i data-lucide="users" class="mr-2 text-blue-400"></i>Soft Skills</h3>
+                        <ul class="space-y-1 text-slate-400">
+                            <!-- EDIT YOUR SOFT SKILLS HERE -->
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Teamwork & Collaboration</li>
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Analytical Thinking</li>
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Problem Solving</li>
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Communication</li>
+                            <li class="flex items-center p-2 rounded-md skill-item"><i data-lucide="check-circle" class="mr-3 text-green-400 h-4 w-4 flex-shrink-0"></i>Time Management</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-20 section-fade-in">
+            <h2 class="text-3xl font-bold text-center mb-12 text-blue-400">My Projects</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                
+                <!-- START: PROJECT 1 -->
+                <div class="glass-card rounded-lg overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col">
+                    <img src="https://placehold.co/600x400/1E293B/94A3B8?text=UI/UX+Project" alt="Project 1" class="w-full h-48 object-cover">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="font-bold text-lg mb-2 text-slate-100">UI/UX jastipinAja Figma Prototype</h3>
+                        <p class="text-slate-400 text-sm mb-4">JastipinAja is a jasatitip(entrusted service) application that provide entrusted service for anyone want simple and reliable way for anyone who wants to buy items from different places.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-blue-900/50 text-blue-300 text-xs font-medium px-2.5 py-0.5 rounded-full">Figma</span>
+                            <span class="bg-blue-900/50 text-blue-300 text-xs font-medium px-2.5 py-0.5 rounded-full">UI/UX Design</span>
+                        </div>
+                        <div class="mt-auto pt-4">
+                            <a href="https://www.figma.com/design/X3ByIVl75ZUEhUpIfbgGHw/JastipinAja-Prototype?node-id=0-1&t=Id0Ja660I29lLg8v-1" class="inline-flex items-center text-sm font-semibold text-blue-300 hover:text-blue-400 group">
+                                Open Project
+                                <i data-lucide="arrow-right" class="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- END: PROJECT 1 -->
+
+                <!-- START: PROJECT 2 -->
+                <div class="glass-card rounded-lg overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col">
+                    <img src="https://placehold.co/600x400/1E293B/94A3B8?text=Java+Programming" alt="Project 2" class="w-full h-48 object-cover">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="font-bold text-lg mb-2 text-slate-100">GoGoQuery</h3>
+                        <p class="text-slate-400 text-sm mb-4">GoGoQuery is a simple POS System made with Java programming language, using Object Oriented Programming principles and SQL data structure..</p>
+                         <div class="flex flex-wrap gap-2">
+                            <span class="bg-green-900/50 text-green-300 text-xs font-medium px-2.5 py-0.5 rounded-full">Java</span>
+                            <span class="bg-green-900/50 text-green-300 text-xs font-medium px-2.5 py-0.5 rounded-full">SQL</span>
+                             <span class="bg-green-900/50 text-green-300 text-xs font-medium px-2.5 py-0.5 rounded-full">JavaFx</span>
+                        </div>
+                        <div class="mt-auto pt-4">
+                            <a href="https://github.com/vincentsiuschang/Java-Project-GoGoQuery.git" class="inline-flex items-center text-sm font-semibold text-blue-300 hover:text-blue-400 group">
+                                Open Project
+                                <i data-lucide="arrow-right" class="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- END: PROJECT 2 -->
+                 <!-- To add a new project, copy from "START: PROJECT" to "END: PROJECT" and paste it here. -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-slate-900/70 text-slate-400 pt-20 pb-10 section-fade-in">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                <!-- Column 1: Contact Info -->
+                <div>
+                    <h3 class="font-semibold text-lg text-slate-200 mb-4">Get in Touch</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm">Email</p>
+                            <!-- EDIT YOUR EMAIL -->
+                            <a href="mailto:vincentsius.chang@gmail.com" class="hover:text-blue-400 transition-colors duration-300">vincentsius.chang@gmail.com</a>
+                        </div>
+                        <div>
+                            <p class="text-sm">Phone</p>
+                            <!-- EDIT YOUR PHONE NUMBER -->
+                            <a href="tel:+6281346261911" class="hover:text-blue-400 transition-colors duration-300">(+62) 813-4626-1911</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 2: Social Links -->
+                <div>
+                    <h3 class="font-semibold text-lg text-slate-200 mb-4">Connect with Me</h3>
+                     <div class="flex justify-center md:justify-start space-x-4">
+                        <!-- EDIT YOUR LINKEDIN URL -->
+                        <a href="www.linkedin.com/in/vincentsius-ferrer-chang-117bb8369" class="hover:text-blue-400 transform hover:scale-110 transition-all duration-300">
+                            <i data-lucide="linkedin" class="h-6 w-6"></i>
+                        </a>
+                        <!-- EDIT YOUR INSTAGRAM URL -->
+                        <a href="https://www.instagram.com/vincentsiuss_/" class="hover:text-blue-400 transform hover:scale-110 transition-all duration-300">
+                           <i data-lucide="instagram" class="h-6 w-6"></i>
+                        </a>
+                        <!-- EDIT YOUR GITHUB URL -->
+                        <a href="https://github.com/vincentsiuschang" class="hover:text-blue-400 transform hover:scale-110 transition-all duration-300">
+                           <i data-lucide="github" class="h-6 w-6"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Column 3: Back to Top -->
+                <div>
+                     <h3 class="font-semibold text-lg text-slate-200 mb-4">Navigation</h3>
+                     <a href="#hero" class="group inline-flex items-center hover:text-blue-400 transition-colors duration-300">
+                        Back to the top
+                        <i data-lucide="arrow-up" class="ml-2 h-4 w-4 transform group-hover:-translate-y-1 transition-transform duration-300"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-16 pt-8 border-t border-slate-700 text-center text-sm">
+                <!-- EDIT COPYRIGHT YEAR AND NAME -->
+                <p>&copy; 2025 Vincentsius Ferrer Chang. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Fade-in sections on scroll
+        const sections = document.querySelectorAll('.section-fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // Active Nav Link Highlighting on Scroll
+        const navLinks = document.querySelectorAll('.nav-link');
+        const contentSections = document.querySelectorAll('main section[id], footer[id]');
+        
+        const activateNavLink = () => {
+            let currentSection = 'hero';
+            const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 2;
+
+            if (isAtBottom) {
+                 const lastSection = contentSections[contentSections.length - 1];
+                 if(lastSection) currentSection = lastSection.getAttribute('id');
+            } else {
+                 contentSections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        currentSection = section.getAttribute('id');
+                    }
+                });
+            }
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        };
+        
+        // Real-time clock function
+        const clockElement = document.getElementById('clock');
+        function updateClock() {
+            if (!clockElement) return;
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        
+        // Particle Animation Script
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function createParticles() {
+            particles = [];
+            let particleCount = (canvas.width * canvas.height) / 10000;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5 + 0.5,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                });
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < 0 || p.x > canvas.width) p.vx = -p.vx;
+                if (p.y < 0 || p.y > canvas.height) p.vy = -p.vy;
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.fill();
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j];
+                    const dx = p.x - p2.x;
+                    const dy = p.y - p2.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${1 - distance / 120})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('scroll', activateNavLink);
+        window.addEventListener('load', () => {
+            activateNavLink();
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // Initialize animation
+            resizeCanvas();
+            createParticles();
+            animateParticles();
+        });
+        
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            createParticles();
+        });
+
+    </script>
+</body>
+</html>
